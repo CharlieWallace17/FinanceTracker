@@ -2,14 +2,14 @@
 
 namespace FinanceTracker.CQRS;
 
-public class GetStockPriceByTickerQuery
+public class StockPriceByTickerQuery
 {
     public required string Ticker { get; init; }
 }
 
-public class GetStockPriceByTickerQueryHandler(IFinnhubService finnhubService)
+public class StockPriceByTickerQueryHandler(IFinnhubService finnhubService)
 {
-    public async Task<GetStockPriceByTickerResult> HandleAsync(GetStockPriceByTickerQuery query)
+    public async Task<StockPriceByTickerQueryResult> HandleAsync(StockPriceByTickerQuery query)
     {
         var result = await finnhubService.GetStockPriceByTicker(query.Ticker);
 

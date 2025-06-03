@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
+﻿
 namespace FinanceTracker.Services;
 
 public class FinnhubResult
@@ -26,7 +25,7 @@ public class FinnhubResult
     public decimal pc { get; init; }
 }
 
-public class GetStockPriceByTickerResult
+public class StockPriceByTickerQueryResult
 {
     public decimal CurrentPrice { get; init; }
     public decimal Change { get; init; }
@@ -39,7 +38,7 @@ public class GetStockPriceByTickerResult
 
 public class FinnhubService(HttpClient client) : IFinnhubService
 {
-    public async Task<GetStockPriceByTickerResult> GetStockPriceByTicker(string ticker)
+    public async Task<StockPriceByTickerQueryResult> GetStockPriceByTicker(string ticker)
     {
         string url = $"quote?symbol={ticker}&token={Constants.ApiKey}";
 
@@ -52,7 +51,7 @@ public class FinnhubService(HttpClient client) : IFinnhubService
         if (apiQuote == null)
             throw new ApplicationException($"Unable to get stock price for ticker: {ticker}");
 
-        return new GetStockPriceByTickerResult
+        return new StockPriceByTickerQueryResult
         {
             CurrentPrice = apiQuote.c,
             Change = apiQuote.d,

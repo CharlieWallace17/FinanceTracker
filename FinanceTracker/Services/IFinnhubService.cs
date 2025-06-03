@@ -2,5 +2,5 @@
 
 public interface IFinnhubService
 {
-    Task<GetStockPriceByTickerResult> GetStockPriceByTicker(string ticker);
+    Task<StockPriceByTickerQueryResult> GetStockPriceByTicker(string ticker);
 }
