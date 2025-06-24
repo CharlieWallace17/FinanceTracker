@@ -1,5 +1,4 @@
-﻿
-namespace FinanceTracker.Services;
+﻿namespace FinanceTracker.Services;
 
 public class FinnhubResult
 {

@@ -2,18 +2,14 @@
 
 namespace FinanceTracker;
 
-public class StockContext : DbContext
+public class StockDbContext(DbContextOptions<StockDbContext> options) : DbContext(options)
 {
     public DbSet<Stock> Stocks { get; init; }
-
-    public StockContext(DbContextOptions<StockContext> options)
-    {
-    }
 }
 
 public class Stock
 {
     public int StockId { get; init; }
-    public string Ticker { get; set; }
+    public required string Ticker { get; set; }
     public decimal CurrentPrice { get; set; }
 }

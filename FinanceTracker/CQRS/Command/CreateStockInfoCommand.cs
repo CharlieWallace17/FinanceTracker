@@ -1,12 +1,12 @@
-﻿namespace FinanceTracker.CQRS;
+﻿namespace FinanceTracker.CQRS.Command;
 
 public class CreateStockInfoCommand
 {
-    public string Ticker { get; set; }
+    public required string Ticker { get; set; }
     public decimal CurrentPrice { get; set; }
 }
 
-public class CreateStockInfoCommandHandler(StockContext dbContext)
+public class CreateStockInfoCommandHandler(StockDbContext dbContext)
 {
     public async Task HandleAsync(CreateStockInfoCommand command)
     {
@@ -15,7 +15,7 @@ public class CreateStockInfoCommandHandler(StockContext dbContext)
 
         await dbContext.AddAsync(new Stock
         {
-            Ticker = command.Ticker,
+            Ticker = command.Ticker.ToUpper(),
             CurrentPrice = command.CurrentPrice
         });
 

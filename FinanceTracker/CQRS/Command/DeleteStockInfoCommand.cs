@@ -7,7 +7,7 @@ public class DeleteStockInfoCommand
     public int StockId { get; set; }
 }
 
-public class DeleteStockInfoCommandHandler(StockContext dbContext)
+public class DeleteStockInfoCommandHandler(StockDbContext dbContext)
 {
     public async Task HandleAsync(DeleteStockInfoCommand command)
     {

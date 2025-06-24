@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FinanceTracker.Migrations
 {
-    [DbContext(typeof(StockContext))]
+    [DbContext(typeof(StockDbContext))]
     [Migration("20250617014032_InitialCreate")]
     partial class InitialCreate
     {

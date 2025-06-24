@@ -1,17 +1,17 @@
-﻿namespace FinanceTracker.CQRS;
+﻿namespace FinanceTracker.CQRS.Command;
 
 public class UpdateStockInfoCommand
 {
-    public int StockId { get; set; }
-    public string Ticker { get; set; }
-    public decimal CurrentPrice { get; set; }
+    public int StockId { get; init; }
+    public required string Ticker { get; init; }
+    public decimal CurrentPrice { get; init; }
 }
 
-public class UpdateStockInfoCommandHandler(StockContext dbContext)
+public class UpdateStockInfoCommandHandler(StockDbContext dbContext)
 {
     public async Task HandleAsync(UpdateStockInfoCommand command)
     {
-        if (command.StockId == default)
+        if (command.StockId == 0)
             throw new ArgumentNullException(nameof(command.StockId));
 
         var stock = await dbContext.Stocks.FindAsync(command.StockId);
@@ -19,7 +19,7 @@ public class UpdateStockInfoCommandHandler(StockContext dbContext)
             throw new ArgumentException($"Stock with id {command.StockId} not found");
 
         if (command.Ticker.Length > 0)
-            stock.Ticker = command.Ticker;
+            stock.Ticker = command.Ticker.ToUpper();
 
         if (command.CurrentPrice > 0)
             stock.CurrentPrice = command.CurrentPrice;

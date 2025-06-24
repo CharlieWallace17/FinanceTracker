@@ -1,6 +1,9 @@
 using FinanceTracker;
 using FinanceTracker.CQRS;
+using FinanceTracker.CQRS.Command;
+using FinanceTracker.CQRS.Query;
 using FinanceTracker.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +19,7 @@ builder.Services.AddHttpClient<IFinnhubService, FinnhubService>(client =>
 // Register CQRS
 builder.Services.AddScoped<StockPriceByTickerQueryHandler>();
 builder.Services.AddScoped<StockInfoQueryHandler>();
+builder.Services.AddScoped<StocksInfoQueryHandler>();
 builder.Services.AddScoped<CreateStockInfoCommandHandler>();
 builder.Services.AddScoped<UpdateStockInfoCommandHandler>();
 builder.Services.AddScoped<DeleteStockInfoCommandHandler>();
@@ -25,13 +29,13 @@ const string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "_myAllowSpecificOrigins",
-        policy => { policy.WithOrigins("http://localhost:5173").AllowAnyHeader(); });
+        policy => { policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod(); });
 });
 
 // Connect to local db
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                           ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<StockContext>(options => options.UseSqlite(connectionString));
+builder.Services.AddDbContext<StockDbContext>(options => options.UseSqlite(connectionString));
 
 var app = builder.Build();
 
@@ -56,16 +60,23 @@ app.MapGet("/stock/{stockId:int}", async (int stockId, StockInfoQueryHandler han
     return Results.Ok(result);
 });
 
-app.MapPost("/stock/create", async (CreateStockInfoCommandHandler handler, string ticker, decimal currentPrice) =>
+app.MapGet("/stocks", async (StocksInfoQueryHandler handler) =>
 {
-    await handler.HandleAsync(new CreateStockInfoCommand { Ticker = ticker, CurrentPrice = currentPrice });
+    var result = await handler.HandleAsync(new StocksInfoQuery());
+
+    return Results.Ok(result);
+});
+
+app.MapPost("/stock/create", async ([FromBody] CreateStockInfoCommand command, CreateStockInfoCommandHandler handler) =>
+{
+    await handler.HandleAsync(command);
 
     return Results.Ok("Stock added");
 });
 
-app.MapPost("/stock/{stockId:int}", async (UpdateStockInfoCommandHandler handler, int stockId, string ticker, decimal currentPrice) =>
+app.MapPut("/stock/{stockId:int}", async ([FromBody] UpdateStockInfoCommand command, UpdateStockInfoCommandHandler handler) =>
 {
-    await handler.HandleAsync(new UpdateStockInfoCommand { StockId = stockId, Ticker = ticker, CurrentPrice = currentPrice });
+    await handler.HandleAsync(command);
 
     return Results.Ok("Stock added");
 });
